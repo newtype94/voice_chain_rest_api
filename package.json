@@ -1,10 +1,8 @@
 {
-  "name": "aws-rest-with-dynamodb",
+  "name": "nodejs-upgrade-functions",
   "version": "1.0.0",
-  "description": "Serverless CRUD service exposing a REST HTTP interface",
-  "author": "",
-  "license": "MIT",
+  "private": true,
   "dependencies": {
-    "uuid": "^2.0.3"
+    "aws-sdk": "^2.434.0"
   }
 }

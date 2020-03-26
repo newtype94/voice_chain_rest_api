@@ -1,2 +1,6 @@
-node_modules
-.serverless
+*.iml
+.idea/
+.aws-sam/
+packaged.yaml
+node_modules/
+package-lock.json

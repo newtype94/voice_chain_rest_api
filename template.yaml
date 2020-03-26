@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: >-
+  A simple backend (read/write to DynamoDB) with a RESTful API endpoint using Amazon API Gateway.
+Parameters:
+  TableNameParameter:
+    Type: String
+    Default: "chains"
+    Description: (Required) The name of the new DynamoDB to store connection identifiers for each connected clients. Minimum 3 characters
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: ^[A-Za-z_]+$
+    ConstraintDescription: "Required. Can be characters and underscore only. No numbers or special characters allowed."
+
+Resources:
+  microservicehttpendpoint:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableNameParameter
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /MyResource
+            Method: ANY
