@@ -13,22 +13,42 @@ Parameters:
     ConstraintDescription: "Required. Can be characters and underscore only. No numbers or special characters allowed."
 
 Resources:
-  microservicehttpendpoint:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+  ConnectionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "index"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "index"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      SSESpecification:
+        SSEEnabled: True
+      TableName: !Ref TableNameParameter
+  GetHandler:
     Type: "AWS::Serverless::Function"
     Properties:
-      Handler: index.handler
+      Handler: get.handler
       Runtime: nodejs12.x
-      CodeUri: .
-      Description: >-
-        A simple backend (read/write to DynamoDB) with a RESTful API endpoint using Amazon API Gateway.
+      CodeUri: lambdas/
+      Description: Get handler
       MemorySize: 512
       Timeout: 10
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TableNameParameter
       Events:
-        Api1:
+        ApiEvent:
           Type: Api
           Properties:
-            Path: /MyResource
-            Method: ANY
+            Path: /
+            Method: get
+            RestApiId:
+              Ref: ApiGatewayApi
