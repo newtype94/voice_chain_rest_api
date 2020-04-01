@@ -1,6 +1,5 @@
-"use strict";
-
 const AWS = require("aws-sdk");
+
 const dynamoDb = new AWS.DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
   region: process.env.AWS_REGION
@@ -9,7 +8,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient({
 exports.handler = (event, context, callback) => {
   const params = {
     TableName: process.env.TableName,
-    Key: {
+    Item: {
       index: event.pathParameters.index
     }
   };

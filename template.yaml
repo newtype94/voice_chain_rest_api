@@ -16,31 +16,42 @@ Resources:
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
+      EndpointConfiguration: REGIONAL
       StageName: prod
+
   ConnectionsTable:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
         - AttributeName: "index"
           AttributeType: "S"
+        - AttributeName: "createdAt"
+          AttributeType: "N"
       KeySchema:
         - AttributeName: "index"
           KeyType: "HASH"
+        - AttributeName: "createdAt"
+          KeyType: "RANGE"
+
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
       SSESpecification:
         SSEEnabled: True
       TableName: !Ref TableNameParameter
-  GetHandler:
+
+  ChainHandler:
     Type: "AWS::Serverless::Function"
     Properties:
-      Handler: get.handler
+      Handler: create.handler
       Runtime: nodejs12.x
-      CodeUri: lambdas/
-      Description: Get handler
+      CodeUri: src/
+      Description: chain handler
       MemorySize: 512
       Timeout: 10
+      Environment:
+        Variables:
+          TableName: !Ref TableNameParameter
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TableNameParameter
@@ -48,7 +59,31 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /
+            Path: /chain
+            Method: get
+            RestApiId:
+              Ref: ApiGatewayApi
+
+  IndexHandler:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: index.hello
+      Runtime: nodejs12.x
+      CodeUri: src/
+      Description: Get handler
+      MemorySize: 512
+      Timeout: 10
+      Environment:
+        Variables:
+          TableName: !Ref TableNameParameter
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableNameParameter
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /index
             Method: get
             RestApiId:
               Ref: ApiGatewayApi

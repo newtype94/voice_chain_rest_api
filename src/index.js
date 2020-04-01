@@ -29,7 +29,7 @@ exports.hello = (event, context, callback) => {
 function sendResponse(statusCode, message, callback) {
   const response = {
     statusCode: statusCode,
-    body: JSON.stringify(message)
+    body: "good connect"
   };
   callback(null, response);
 }
