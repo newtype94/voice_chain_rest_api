@@ -7,7 +7,7 @@ const ddb = new AWS.DynamoDB.DocumentClient({
   region: process.env.AWS_REGION
 });
 
-mexports.delete = (event, context, callback) => {
+exports.delete = (event, context, callback) => {
   const params = {
     TableName: process.env.TableName,
     Key: {
@@ -30,8 +30,4 @@ mexports.delete = (event, context, callback) => {
     headers: { "Content-Type": "text/plain" },
     body: "SUCCESS"
   };
-
-  
-
-    
 };
