@@ -4,7 +4,7 @@ const AWS = require("aws-sdk");
 
 const ddb = new AWS.DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
-  region: process.env.AWS_REGION
+  region: process.env.AWS_REGION,
 });
 
 exports.hello = (event, context, callback) => {
@@ -29,7 +29,11 @@ exports.hello = (event, context, callback) => {
 function sendResponse(statusCode, message, callback) {
   const response = {
     statusCode: statusCode,
-    body: "good connect"
+    header: {
+      "Content-Type": "text/plain",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: message,
   };
   callback(null, response);
 }

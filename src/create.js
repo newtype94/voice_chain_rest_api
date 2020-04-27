@@ -5,12 +5,14 @@ const ddb = new AWS.DynamoDB.DocumentClient({
   region: process.env.AWS_REGION,
 });
 
+const { TableName } = process.env;
+
 exports.handler = async (event) => {
   const timestamp = new Date().getTime();
 
-  /*
-  const data = JSON.parse(event.body);
+  const { data } = JSON.parse(event.body);
 
+  /*
   if (typeof data.timestamp !== "string")
     return {
       statusCode: 400,
@@ -19,24 +21,17 @@ exports.handler = async (event) => {
     };
   */
 
-  const putParams = {
-    TableName: process.env.TableName,
-    Item: {
-      index: timestamp.toString(),
-      createdAt: timestamp,
-    },
-  };
-
-  const getParams = {
-    TableName: process.env.TableName,
-  };
-
   let puts;
   let scans;
 
   try {
-    puts = await ddb.put(putParams).promise();
-    scans = await ddb.scan(getParams).promise();
+    puts = await ddb
+      .put({
+        TableName,
+        Item: JSON.parse(data),
+      })
+      .promise();
+    scans = await ddb.scan({ TableName }).promise();
   } catch (err) {
     return {
       statusCode: err.statusCode || 501,

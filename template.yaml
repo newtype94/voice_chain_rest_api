@@ -5,8 +5,8 @@ Description: >-
 Parameters:
   TableNameParameter:
     Type: String
-    Default: "chains"
-    Description: store connection identifiers for each connected clients. Minimum 3 characters
+    Default: "VC_chains"
+    Description: store full chains. Minimum 3 characters
     MinLength: 3
     MaxLength: 50
     AllowedPattern: ^[A-Za-z_]+$
@@ -23,16 +23,15 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "index"
+        - AttributeName: "hash"
           AttributeType: "S"
-        - AttributeName: "createdAt"
+        - AttributeName: "index"
           AttributeType: "N"
       KeySchema:
-        - AttributeName: "index"
+        - AttributeName: "hash"
           KeyType: "HASH"
-        - AttributeName: "createdAt"
+        - AttributeName: "index"
           KeyType: "RANGE"
-
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
@@ -59,8 +58,8 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /chain
-            Method: get
+            Path: /create
+            Method: post
             RestApiId:
               Ref: ApiGatewayApi
 

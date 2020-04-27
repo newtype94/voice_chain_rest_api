@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebSocket test</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript">
+      let logs;
+
+      const transaction = {
+        userId: 123,
+        voiceHash: "md5 hash by voice",
+        timeStamp: new Date().getTime(),
+      };
+
+      let blocks = [
+        {
+          index: 1,
+          hash: "firstBlockHash",
+          previousHash: "none",
+          createdAt: 1562000010000,
+          data: {
+            userId: "kyh",
+            voiceHash: "firstVoiceHash",
+            timeStamp: 1562000000000,
+          },
+        },
+        {
+          index: 2,
+          hash: "secondBlockHash",
+          previousHash: "firstBlockHash",
+          createdAt: 1587000010000,
+          data: {
+            userId: "kyh",
+            voiceHash: "secondVoiceHash",
+            timeStamp: 1587000000000,
+          },
+        },
+      ];
+
+      window.onload = () => {
+        logs = document.getElementById("result");
+      };
+
+      function onMessage(e) {
+        logs.textContent += "New MSG : " + e.data;
+      }
+
+      function postData(url = "", data = {}) {
+        return fetch(url, {
+          method: "POST", // *GET, POST, PUT, DELETE, etc.
+          mode: "no-cors", // no-cors, cors, *same-origin
+          cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: "same-origin", // include, *same-origin, omit
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data), // body data type must match "Content-Type" header
+        }).then((response) => response.json()); // parses JSON response into native JavaScript objects
+      }
+
+      const doPost = () => {
+        postData(
+          "https://cq05sgf8qi.execute-api.ap-northeast-2.amazonaws.com/prod/create",
+          blocks[1]
+        )
+          .then((data) => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
+          .catch((error) => {
+            console.log(error);
+          });
+
+        transaction.voiceHash = document.getElementById("message").value;
+      };
+
+      const doGet = async () => {
+        const a = await axios.get(
+          "https://cq05sgf8qi.execute-api.ap-northeast-2.amazonaws.com/prod/index"
+        );
+        console.log(a);
+
+        transaction.voiceHash = document.getElementById("message").value;
+      };
+    </script>
+  </head>
+  <body>
+    <input type="text" placeholder="Message" id="message" />
+    <input type="button" onclick="doGet();" value="Get" />
+    <input type="button" onclick="doPost();" value="Post" />
+    <input type="button" onclick="doUpdate();" value="Update" />
+    <input type="button" onclick="doRemove();" value="Remove" />
+    <h3 id="result">로그</h3>
+  </body>
+</html>
