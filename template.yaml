@@ -39,13 +39,13 @@ Resources:
         SSEEnabled: True
       TableName: !Ref TableNameParameter
 
-  ChainHandler:
+  CheckHandler:
     Type: "AWS::Serverless::Function"
     Properties:
-      Handler: create.handler
+      Handler: check.handler
       Runtime: nodejs12.x
       CodeUri: src/
-      Description: chain handler
+      Description: check handler
       MemorySize: 512
       Timeout: 10
       Environment:
@@ -58,18 +58,18 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /create
-            Method: post
+            Path: /check
+            Method: any
             RestApiId:
               Ref: ApiGatewayApi
 
-  IndexHandler:
+  BlockHandler:
     Type: "AWS::Serverless::Function"
     Properties:
-      Handler: index.hello
+      Handler: block.handler
       Runtime: nodejs12.x
       CodeUri: src/
-      Description: Get handler
+      Description: Block handler
       MemorySize: 512
       Timeout: 10
       Environment:
@@ -82,7 +82,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /index
-            Method: get
+            Path: /block
+            Method: any
             RestApiId:
               Ref: ApiGatewayApi
