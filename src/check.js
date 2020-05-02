@@ -21,7 +21,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 400,
       headers,
-      body: "insert parameter on url..",
+      body: "Insert parameters on url..",
     };
 
   let {
@@ -34,21 +34,27 @@ exports.handler = async (event) => {
     createdAt,
   } = event.queryStringParameters;
 
-  if (!index || !userId || !voiceHash || !timeStamp)
+  if (
+    !index ||
+    !hash ||
+    !previousHash ||
+    !createdAt ||
+    !userId ||
+    !voiceHash ||
+    !timeStamp
+  )
     return {
       statusCode: 400,
       headers,
-      body: "check your parameters on url..",
+      body: "At least one more parameter missed..",
     };
 
-  let gets, getsNext;
+  let get, getNext;
 
   try {
     index = parseInt(index);
-    gets = await ddb.get({ TableName, Key: { index } }).promise();
-    getsNext = await ddb
-      .get({ TableName, Key: { index: index + 1 } })
-      .promise();
+    get = await ddb.get({ TableName, Key: { index } }).promise();
+    getNext = await ddb.get({ TableName, Key: { index: index + 1 } }).promise();
   } catch (err) {
     return {
       statusCode: err.statusCode || 501,
@@ -57,39 +63,33 @@ exports.handler = async (event) => {
     };
   }
 
-  if (authorize.length !== 1)
+  if (get.length !== 1)
     return {
       statusCode: 400,
       headers,
       body: "No match with index..",
     };
 
-  let body;
+  let checkResult;
 
-  if (hash && previousHash && createdAt) {
-    if (
-      gets.hash === hash &&
-      gets.previousHash === previousHash &&
-      gets.createdAt === parseInt(createdAt) &&
-      gets.data.userId === userId &&
-      gets.data.voiceHash === voiceHash &&
-      gets.data.timeStamp === parseInt(timeStamp)
-    )
-      body = "block success";
-    else body = "block fail";
-  } else {
-    if (
-      gets.data.userId === userId &&
-      gets.data.voiceHash === voiceHash &&
-      gets.data.timeStamp === parseInt(timeStamp)
-    )
-      body = "data success";
-    else body = "data fail";
-  }
+  //block check
+  if (
+    get.hash === hash &&
+    get.previousHash === previousHash &&
+    get.createdAt === parseInt(createdAt) &&
+    get.data.userId === userId &&
+    get.data.voiceHash === voiceHash &&
+    get.data.timeStamp === parseInt(timeStamp)
+  )
+    checkResult = { isCorrect: true };
+  else checkResult = { isCorrect: false };
+
+  if (getNext.length > 0) checkResult.isLast = false;
+  else checkResult.isLast = true;
 
   return {
     statusCode: 200,
     headers,
-    body,
+    body: JSON.stringify(checkResult),
   };
 };

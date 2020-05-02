@@ -1,9 +1,7 @@
 "use strict";
 
 const AWS = require("aws-sdk");
-
 const { TableName } = process.env;
-
 const headers = {
   "Content-Type": "text/plain",
   "Access-Control-Allow-Origin": "*",
