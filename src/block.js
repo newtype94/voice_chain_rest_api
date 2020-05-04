@@ -27,17 +27,16 @@ exports.handler = async (event) => {
     };
 
     if (event.queryStringParameters) {
-      const { index, start, end } = event.queryStringParameters;
+      const { index, start } = event.queryStringParameters;
       if (index) {
         params.FilterExpression = "#idx = :index";
         params.ExpressionAttributeValues = {
           ":index": parseInt(index),
         };
-      } else if (start && end) {
-        params.FilterExpression = "#idx between :start and :end";
+      } else if (start) {
+        params.FilterExpression = "#idx >= :start";
         params.ExpressionAttributeValues = {
           ":start": parseInt(start),
-          ":end": parseInt(end),
         };
       }
     }
@@ -63,13 +62,11 @@ exports.handler = async (event) => {
     //------------
     //POST case start
   } else if (event.httpMethod === "POST") {
-    const input = JSON.parse(event.body);
-
     try {
-      puts = await ddb
+      await ddb
         .put({
           TableName,
-          Item: input,
+          Item: JSON.parse(event.body),
         })
         .promise();
     } catch (err) {
@@ -83,7 +80,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify(puts),
+      body: "successed",
     };
   }
 };

@@ -63,16 +63,17 @@ exports.handler = async (event) => {
     };
   }
 
-  if (get.length !== 1)
+  if (!get.Item)
     return {
       statusCode: 400,
       headers,
       body: "No match with index..",
     };
+  else get = get.Item;
 
   let checkResult;
 
-  //block check
+  //isCorrect check
   if (
     get.hash === hash &&
     get.previousHash === previousHash &&
@@ -84,7 +85,8 @@ exports.handler = async (event) => {
     checkResult = { isCorrect: true };
   else checkResult = { isCorrect: false };
 
-  if (getNext.length > 0) checkResult.isLast = false;
+  //isLast check
+  if (getNext.Item) checkResult.isLast = false;
   else checkResult.isLast = true;
 
   return {

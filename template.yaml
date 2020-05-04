@@ -23,15 +23,11 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "hash"
-          AttributeType: "S"
         - AttributeName: "index"
           AttributeType: "N"
       KeySchema:
-        - AttributeName: "hash"
-          KeyType: "HASH"
         - AttributeName: "index"
-          KeyType: "RANGE"
+          KeyType: "HASH"
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
