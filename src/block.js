@@ -73,7 +73,7 @@ exports.handler = async (event) => {
       return {
         statusCode: err.statusCode || 501,
         headers,
-        body: "Failed to put.." + JSON.stringify(err) + JSON.stringify(input),
+        body: "Failed to put.." + JSON.stringify(err),
       };
     }
 
