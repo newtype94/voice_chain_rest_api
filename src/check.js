@@ -1,9 +1,7 @@
 "use strict";
 
 const AWS = require("aws-sdk");
-
 const { TableName } = process.env;
-
 const headers = {
   "Content-Type": "text/plain",
   "Access-Control-Allow-Origin": "*",
@@ -26,12 +24,12 @@ exports.handler = async (event) => {
 
   let {
     index,
-    userId,
-    voiceHash,
-    timeStamp,
     hash,
     previousHash,
     createdAt,
+    tx_userId,
+    tx_voiceHash,
+    tx_timeStamp,
   } = event.queryStringParameters;
 
   if (
@@ -39,9 +37,9 @@ exports.handler = async (event) => {
     !hash ||
     !previousHash ||
     !createdAt ||
-    !userId ||
-    !voiceHash ||
-    !timeStamp
+    !tx_userId ||
+    !tx_voiceHash ||
+    !tx_timeStamp
   )
     return {
       statusCode: 400,
@@ -65,25 +63,21 @@ exports.handler = async (event) => {
 
   if (!get.Item)
     return {
-      statusCode: 400,
+      statusCode: 200,
       headers,
-      body: "No match with index..",
+      body: { isCorrect: false, isLast: false },
     };
   else get = get.Item;
 
-  let checkResult;
-
-  //isCorrect check
-  if (
-    get.hash === hash &&
-    get.previousHash === previousHash &&
-    get.createdAt === parseInt(createdAt) &&
-    get.data.userId === userId &&
-    get.data.voiceHash === voiceHash &&
-    get.data.timeStamp === parseInt(timeStamp)
-  )
-    checkResult = { isCorrect: true };
-  else checkResult = { isCorrect: false };
+  const checkResult = {
+    isCorrect:
+      get.hash === hash &&
+      get.previousHash === previousHash &&
+      get.createdAt === parseInt(createdAt) &&
+      get.tx_userId === tx_userId &&
+      get.tx_voiceHash === tx_voiceHash &&
+      get.tx_timeStamp === parseInt(tx_timeStamp),
+  };
 
   //isLast check
   if (getNext.Item) checkResult.isLast = false;

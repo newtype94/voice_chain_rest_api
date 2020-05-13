@@ -18,11 +18,11 @@ exports.handler = async (event) => {
   if (event.httpMethod === "GET") {
     let params = {
       TableName,
-      ProjectionExpression: "#idx, #hs, previousHash, createdAt, #dt",
+      ProjectionExpression:
+        "#idx, #hs, previousHash, createdAt, tx_userId, tx_voiceHash, tx_timeStamp",
       ExpressionAttributeNames: {
         "#idx": "index",
         "#hs": "hash",
-        "#dt": "data",
       },
     };
 
@@ -67,6 +67,7 @@ exports.handler = async (event) => {
         .put({
           TableName,
           Item: JSON.parse(event.body),
+          ConditionExpression: "attribute_not_exists(index)",
         })
         .promise();
     } catch (err) {
