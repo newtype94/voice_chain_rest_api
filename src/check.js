@@ -15,13 +15,6 @@ const ddb = new AWS.DynamoDB.DocumentClient({
 });
 
 exports.handler = async (event) => {
-  if (!event.queryStringParameters)
-    return {
-      statusCode: 400,
-      headers,
-      body: "Insert parameters on url..",
-    };
-
   let {
     index,
     hash,
@@ -30,7 +23,7 @@ exports.handler = async (event) => {
     tx_userId,
     tx_voiceHash,
     tx_timeStamp,
-  } = event.queryStringParameters;
+  } = event.queryStringParameters || {};
 
   if (
     !index ||
@@ -65,27 +58,22 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: { isCorrect: false, isLast: false },
+      body: JSON.stringify({ isCorrect: false, isLast: false }),
     };
-  else get = get.Item;
 
-  const checkResult = {
-    isCorrect:
-      get.hash === hash &&
-      get.previousHash === previousHash &&
-      get.createdAt === parseInt(createdAt) &&
-      get.tx_userId === tx_userId &&
-      get.tx_voiceHash === tx_voiceHash &&
-      get.tx_timeStamp === parseInt(tx_timeStamp),
-  };
+  const isCorrect =
+    get.Item.hash === hash &&
+    get.Item.previousHash === previousHash &&
+    get.Item.createdAt === parseInt(createdAt) &&
+    get.Item.tx_userId === tx_userId &&
+    get.Item.tx_voiceHash === tx_voiceHash &&
+    get.Item.tx_timeStamp === parseInt(tx_timeStamp);
 
-  //isLast check
-  if (getNext.Item) checkResult.isLast = false;
-  else checkResult.isLast = true;
+  const isLast = getNext.Item ? false : true;
 
   return {
     statusCode: 200,
     headers,
-    body: JSON.stringify(checkResult),
+    body: JSON.stringify({ isCorrect, isLast }),
   };
 };

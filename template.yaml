@@ -1,7 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
 Description: >-
-  A simple backend (read/write to DynamoDB) with a RESTful API endpoint using Amazon API Gateway.
+  voice_chain_rest
+
 Parameters:
   TableNameParameter:
     Type: String

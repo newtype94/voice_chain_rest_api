@@ -67,7 +67,10 @@ exports.handler = async (event) => {
         .put({
           TableName,
           Item: JSON.parse(event.body),
-          ConditionExpression: "attribute_not_exists(index)",
+          ConditionExpression: "attribute_not_exists(#idx)",
+          ExpressionAttributeNames: {
+            "#idx": "index",
+          },
         })
         .promise();
     } catch (err) {
